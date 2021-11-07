@@ -24,6 +24,19 @@
 リポジトリはこちら：[github.com/rhymof/advent](https://github.com/rhymof/advent)
 ライセンスはMITです。
 
+## 実行手順
+
+* あらかじめ[Download and install](https://golang.org/doc/install)を参考にgoをインストール。
+* goの実行まで
+```
+$ cd app
+$ go build main.go
+$ ./main
+```
+* ブラウザにて表示
+http://localhost:8080/sample
+のようにアクセス。
+
 ## 結びに
 
 本家と同じくちょっとしたお遊びとしてお気軽にご参加ください！
