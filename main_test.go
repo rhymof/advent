@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"net/http/httptest"
 	"testing"
 	"time"
@@ -54,6 +55,8 @@ func Test_isChristmas(t *testing.T) {
 }
 
 func Test_handler(t *testing.T) {
+	backupDecorates(t)
+
 	tests := []struct {
 		name        string
 		path        string
@@ -108,4 +111,15 @@ func setCurrentTime(t time.Time) (restore func()) {
 	return func() {
 		nowFunc = backup
 	}
+}
+
+func backupDecorates(t *testing.T) {
+	backup := decorateFunc
+	backupWriter := decorateWriterFunc
+	decorateFunc = func(msg string) string { return msg }
+	decorateWriterFunc = func(w io.Writer) io.Writer { return w }
+	t.Cleanup(func() {
+		decorateFunc = backup
+		decorateWriterFunc = backupWriter
+	})
 }
