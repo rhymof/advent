@@ -9,11 +9,8 @@ import (
 )
 
 func main() {
-	if cowntdown(time.Now()) == 0 {
-		fmt.Println("Merry, Christmas!")
-	}
 	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Fatal(http.ListenAndServe(":8083", nil))
 }
 
 /*
@@ -23,7 +20,13 @@ Hi, Merry Christmas sachiko!🎅🎄✨
 が表示される
 */
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hi, Merry Christmas %s!🎅🎄✨", r.URL.Path[1:])
+	if isChristmas(time.Now()) {
+		fmt.Fprintf(w, "Hi, Merry Christmas %s!🎅🎄✨", r.URL.Path[1:])
+	}
+}
+
+func isChristmas(t time.Time) bool {
+	return cowntdown(t) == 0
 }
 
 func cowntdown(t time.Time) int {

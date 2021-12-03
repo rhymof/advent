@@ -27,3 +27,27 @@ func TestCountdown(t *testing.T) {
 		}
 	}
 }
+
+func Test_isChristmas(t *testing.T) {
+	tests := []struct {
+		inputString string
+		want        bool
+	}{
+		{"2021-11-30T23:59:59+09:00", false},
+		{"2021-12-01T00:00:00+09:00", false},
+		{"2021-12-24T23:59:59+09:00", false},
+		{"2021-12-25T23:59:59+09:00", true},
+		{"2021-12-26T00:00:00+09:00", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.inputString, func(t *testing.T) {
+			input, err := time.Parse(time.RFC3339, tt.inputString)
+			if err != nil {
+				t.Fatalf("test is wrong. err: %v", err)
+			}
+			if got := isChristmas(input); got != tt.want {
+				t.Errorf("isChristmas() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
