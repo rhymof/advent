@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/http/httptest"
 	"testing"
 	"time"
 )
@@ -49,5 +50,62 @@ func Test_isChristmas(t *testing.T) {
 				t.Errorf("isChristmas() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func Test_handler(t *testing.T) {
+	tests := []struct {
+		name        string
+		path        string
+		now         time.Time
+		wantStatus  int
+		wantMessage string
+	}{
+		{
+			name:       "not christmas",
+			path:       "/",
+			now:        time.Date(2021, 12, 24, 0, 0, 0, 0, time.UTC),
+			wantStatus: 200,
+		},
+		{
+			name:        "christmas",
+			path:        "/",
+			now:         time.Date(2021, 12, 25, 0, 0, 0, 0, time.UTC),
+			wantStatus:  200,
+			wantMessage: "Hi, Merry Christmas !🎅🎄✨",
+		},
+		{
+			name:        "christmas with sachiko",
+			path:        "/sachiko",
+			now:         time.Date(2021, 12, 25, 0, 0, 0, 0, time.UTC),
+			wantStatus:  200,
+			wantMessage: "Hi, Merry Christmas sachiko!🎅🎄✨",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			restore := setCurrentTime(tt.now)
+			defer restore()
+			req := httptest.NewRequest("GET", tt.path, nil)
+			rec := httptest.NewRecorder()
+			handler(rec, req)
+			if tt.wantStatus != rec.Code {
+				t.Fatalf("want status %d, but got %d", tt.wantStatus, rec.Code)
+			}
+			gotBody := rec.Body.String()
+			if tt.wantMessage != gotBody {
+				t.Fatalf("- want body %s\n- got body %s", tt.wantMessage, gotBody)
+			}
+		})
+	}
+}
+
+func setCurrentTime(t time.Time) (restore func()) {
+	backup := nowFunc
+	nowFunc = func() time.Time {
+		return t
+	}
+	return func() {
+		nowFunc = backup
 	}
 }

@@ -19,8 +19,10 @@ http://localhost:8080/sachiko
 Hi, Merry Christmas sachiko!🎅🎄✨
 が表示される
 */
+var nowFunc = time.Now
+
 func handler(w http.ResponseWriter, r *http.Request) {
-	if isChristmas(time.Now()) {
+	if isChristmas(nowFunc()) {
 		fmt.Fprintf(w, "Hi, Merry Christmas %s!🎅🎄✨", r.URL.Path[1:])
 	}
 }
