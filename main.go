@@ -47,10 +47,27 @@ Hi, Merry Christmas sachiko!🎅🎄✨
 */
 func handler(w http.ResponseWriter, r *http.Request) {
 	if isChristmas(nowFunc()) {
-		msg := fmt.Sprintf("Hi, Merry Christmas %s!🎅🎄✨", r.URL.Path[1:])
-		msg = decorateFunc(msg)
-		fmt.Fprintf(decorateWriterFunc(w), msg)
+		handleChristmas(w, r)
+		return
 	}
+	handleCowntdown(w, r)
+}
+
+func handleChristmas(w http.ResponseWriter, r *http.Request) {
+	name := getNameFromRequest(r)
+	msg := fmt.Sprintf("Hi, Merry Christmas %s!🎅🎄✨", name)
+	msg = decorateFunc(msg)
+	fmt.Fprintf(decorateWriterFunc(w), msg)
+}
+
+func handleCowntdown(w http.ResponseWriter, r *http.Request) {
+	name := getNameFromRequest(r)
+	msg := fmt.Sprintf("Hi, %s! It's %d days until Christmas!🦌✨", name, cowntdown(nowFunc()))
+	fmt.Fprintf((w), msg)
+}
+
+func getNameFromRequest(r *http.Request) string {
+	return r.URL.Path[1:]
 }
 
 func isChristmas(t time.Time) bool {
