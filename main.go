@@ -2,6 +2,7 @@ package main
 
 //https://golang.org/doc/articles/wiki/
 import (
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -12,9 +13,13 @@ import (
 	"github.com/Code-Hex/Neo-cowsay/v2/decoration"
 )
 
+var port = flag.Int("p", 8080, "specify port")
+
 func main() {
+	flag.Parse()
 	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Printf("Now listening on http://localhost:%d", *port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
 }
 
 // https://github.com/Code-Hex/Neo-cowsay/tree/master/cows
