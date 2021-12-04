@@ -2,6 +2,7 @@ package main
 
 //https://golang.org/doc/articles/wiki/
 import (
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -12,9 +13,13 @@ import (
 	"github.com/Code-Hex/Neo-cowsay/v2/decoration"
 )
 
+var port = flag.Int("p", 8080, "specify port")
+
 func main() {
+	flag.Parse()
 	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	log.Printf("Now listening on http://localhost:%d", *port)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", *port), nil))
 }
 
 // https://github.com/Code-Hex/Neo-cowsay/tree/master/cows
@@ -47,10 +52,27 @@ Hi, Merry Christmas sachiko!🎅🎄✨
 */
 func handler(w http.ResponseWriter, r *http.Request) {
 	if isChristmas(nowFunc()) {
-		msg := fmt.Sprintf("Hi, Merry Christmas %s!🎅🎄✨", r.URL.Path[1:])
-		msg = decorateFunc(msg)
-		fmt.Fprintf(decorateWriterFunc(w), msg)
+		handleChristmas(w, r)
+		return
 	}
+	handleCowntdown(w, r)
+}
+
+func handleChristmas(w http.ResponseWriter, r *http.Request) {
+	name := getNameFromRequest(r)
+	msg := fmt.Sprintf("Hi, Merry Christmas %s!🎅🎄✨", name)
+	msg = decorateFunc(msg)
+	fmt.Fprintf(decorateWriterFunc(w), msg)
+}
+
+func handleCowntdown(w http.ResponseWriter, r *http.Request) {
+	name := getNameFromRequest(r)
+	msg := fmt.Sprintf("Hi, %s! It's %d days until Christmas!🦌✨", name, cowntdown(nowFunc()))
+	fmt.Fprintf((w), msg)
+}
+
+func getNameFromRequest(r *http.Request) string {
+	return r.URL.Path[1:]
 }
 
 func isChristmas(t time.Time) bool {
