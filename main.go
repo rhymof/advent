@@ -11,6 +11,7 @@ import (
 
 	cowsay "github.com/Code-Hex/Neo-cowsay/v2"
 	"github.com/Code-Hex/Neo-cowsay/v2/decoration"
+	"github.com/rhymof/advent/proverbs"
 )
 
 var port = flag.Int("p", 8080, "specify port")
@@ -69,6 +70,8 @@ func handleCowntdown(w http.ResponseWriter, r *http.Request) {
 	name := getNameFromRequest(r)
 	msg := fmt.Sprintf("Hi, %s! It's %d days until Christmas!🦌✨", name, cowntdown(nowFunc()))
 	fmt.Fprintf((w), msg)
+	proverb := proverbs.FromDate(cowntdown(nowFunc()))
+	fmt.Fprintf((w), proverb)
 }
 
 func getNameFromRequest(r *http.Request) string {
